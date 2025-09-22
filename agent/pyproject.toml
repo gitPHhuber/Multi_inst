@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi-inst-agent"
+version = "0.1.0"
+description = "Multi Inst Betaflight diagnostic agent"
+readme = "README.md"
+authors = [{name = "Multi Inst"}]
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pyserial",
+    "pydantic",
+    "numpy",
+    "zstandard",
+    "pyyaml",
+    "loguru",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "requests",
+    "httpx",
+]
+
+[project.scripts]
+multi-inst = "multi_inst_agent.cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["multi_inst_agent*"]

@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pyserial
+pydantic
+numpy
+zstandard
+pyyaml
+loguru
+requests
+pytest
+httpx
