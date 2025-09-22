@@ -3,25 +3,39 @@ import * as echarts from "echarts";
 
 type Props = {
   title: string;
-  value: number;
+  data: number[];
+  color?: string;
 };
 
-export default function Histogram({ title, value }: Props) {
+export default function Histogram({ title, data, color = "#f97316" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;
     const chart = echarts.init(ref.current, null, { renderer: "svg" });
-    const bins = Array.from({ length: 10 }, (_, idx) => value + idx * 0.2);
+    const values = data.length ? data : [0];
+    const bins = 15;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const step = bins > 0 ? (max - min) / bins || 1 : 1;
+    const histogram = new Array(bins).fill(0);
+    values.forEach((value) => {
+      const idx = Math.min(bins - 1, Math.max(0, Math.floor((value - min) / step)));
+      histogram[idx] += 1;
+    });
     chart.setOption({
       title: { text: title, textStyle: { color: "#cbd5f5", fontSize: 12 } },
       grid: { left: 32, right: 8, top: 24, bottom: 24 },
-      xAxis: { type: "category", data: bins.map((_, idx) => idx), show: false },
+      xAxis: {
+        type: "category",
+        data: histogram.map((_, idx) => (min + idx * step).toFixed(1)),
+        show: false,
+      },
       yAxis: { type: "value", show: false },
       series: [
         {
           type: "bar",
-          data: bins.map((bin, idx) => Math.max(0.1, Math.sin(idx) + 0.5)),
-          itemStyle: { color: "#f97316" },
+          data: histogram,
+          itemStyle: { color },
         }
       ]
     });
@@ -31,7 +45,7 @@ export default function Histogram({ title, value }: Props) {
       window.removeEventListener("resize", handle);
       chart.dispose();
     };
-  }, [title, value]);
+  }, [title, data, color]);
 
   return <div ref={ref} className="h-48 w-full" />;
 }
