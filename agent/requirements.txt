@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pyserial
 pydantic
 numpy
@@ -9,3 +9,4 @@ loguru
 requests
 pytest
 httpx
+websockets

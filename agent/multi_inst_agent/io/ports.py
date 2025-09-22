@@ -33,7 +33,8 @@ class PortFilterConfig:
 
 
 @dataclass
-class PortInfo:
+class PortDescriptor:
+
     """Metadata describing an available serial interface."""
 
     device: str
@@ -65,11 +66,12 @@ def _iter_ports(
         yield port
 
 
-def list_ports(config: PortFilterConfig | None = None) -> List[PortInfo]:
+def list_ports(config: PortFilterConfig | None = None) -> List[PortDescriptor]:
     """Discover available serial ports filtered according to *config*."""
 
     config = config or PortFilterConfig()
-    ports: List[PortInfo] = []
+    ports: List[PortDescriptor] = []
+
     for entry in _iter_ports(config.include_simulated):
         device = entry.device or ""
         if not _is_candidate(device, config.allowed_prefixes) and not (
@@ -88,7 +90,9 @@ def list_ports(config: PortFilterConfig | None = None) -> List[PortInfo]:
             # Ignore ports that do not pass the whitelist when it is enforced.
             continue
         ports.append(
-            PortInfo(
+
+            PortDescriptor(
+
                 device=device,
                 description=entry.description or "",
                 hwid=entry.hwid or "",

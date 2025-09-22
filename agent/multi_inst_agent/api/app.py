@@ -11,9 +11,12 @@ from starlette.websockets import WebSocketState
 
 from .. import __version__
 from ..core.runtime import SessionManager
-from ..io.ports import PortFilterConfig, list_ports
+
+from ..io.ports import PortDescriptor, PortFilterConfig, list_ports
+
 from .models import (
     InfoResponse,
+    PortInfo,
     PortsResponse,
     SnapshotResponse,
     StartRequest,
@@ -33,6 +36,7 @@ app.add_middleware(
 manager = SessionManager()
 
 
+
 def _build_port_filter(req: StartRequest) -> PortFilterConfig:
     return PortFilterConfig(
         enforce_whitelist=req.enforce_whitelist,
@@ -40,15 +44,41 @@ def _build_port_filter(req: StartRequest) -> PortFilterConfig:
     )
 
 
+def _fmt_hex(value: int | None) -> str | None:
+    return f"0x{value:04x}" if value is not None else None
+
+
+def _as_port_info(descriptor: PortDescriptor) -> PortInfo:
+    def _clean(value: str | None) -> str | None:
+        if value is None:
+            return None
+        value = value.strip()
+        return value or None
+
+    name = _clean(descriptor.manufacturer) or _clean(descriptor.product)
+    description = _clean(descriptor.description)
+    return PortInfo(
+        device=descriptor.device,
+        name=name,
+        description=description,
+        vid=_fmt_hex(descriptor.vid),
+        pid=_fmt_hex(descriptor.pid),
+        whitelisted=bool(descriptor.whitelisted),
+        simulated=bool(descriptor.simulated),
+        reason=descriptor.reason,
+
+    )
+
+
 @app.get("/v1/info", response_model=InfoResponse)
 def get_info() -> InfoResponse:
-    ports = [port.__dict__ for port in list_ports()]
+    ports = [_as_port_info(port) for port in list_ports()]
     return InfoResponse(version=__version__, os=platform.platform(), ports=ports)
 
 
 @app.get("/v1/ports", response_model=PortsResponse)
 def get_ports() -> PortsResponse:
-    ports = [port.__dict__ for port in list_ports()]
+    ports = [_as_port_info(port) for port in list_ports()]
     return PortsResponse(ports=ports)
 
 
