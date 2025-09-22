@@ -7,13 +7,30 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
+class PortInfo(BaseModel):
+    device: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    vid: Optional[str] = None
+    pid: Optional[str] = None
+    whitelisted: bool = False
+    simulated: bool = False
+    reason: Optional[str] = None
+
+
 class StartRequest(BaseModel):
     ports: List[str] = Field(default_factory=list)
     baud: int = 1_000_000
     profile: str = "usb_stand"
+    mode: str = Field("normal", pattern="^(normal|pro)$")
+    auto: bool = True
     rates: Dict[str, float] = Field(default_factory=dict)
     record_path: Optional[str] = None
     simulate: bool = False
+    out_dir: str = "./out"
+    enforce_whitelist: bool = True
+    include_simulator: bool = False
+    duration: float = 5.0
 
 
 class StartResponse(BaseModel):
@@ -31,11 +48,11 @@ class StopResponse(BaseModel):
 class InfoResponse(BaseModel):
     version: str
     os: str
-    ports: List[Dict[str, str]]
+    ports: List[PortInfo]
 
 
 class PortsResponse(BaseModel):
-    ports: List[Dict[str, str]]
+    ports: List[PortInfo]
 
 
 class SnapshotResponse(BaseModel):
