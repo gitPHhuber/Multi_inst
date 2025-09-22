@@ -3,22 +3,18 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import platform
 import random
 import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketState
 
 from .. import __version__
-from ..core.analysis import DeviceAnalytics, ImuStatistics, LoopStatistics, evaluate
-from ..core.scheduler import build_scheduler
-from ..io.ports import PortInfo, list_ports, list_port_strings
-from ..io.json_writer import ReportWriter
+from ..io.ports import list_ports, list_port_strings
 from .models import InfoResponse, PortsResponse, SnapshotResponse, StartRequest, StartResponse, StopRequest, StopResponse
 
 app = FastAPI(title="Multi Inst Agent", version=__version__)

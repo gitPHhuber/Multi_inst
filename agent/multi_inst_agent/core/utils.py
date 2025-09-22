@@ -7,7 +7,7 @@ import os
 import time
 from collections import deque
 from statistics import mean, pstdev
-from typing import Deque, Iterable, Tuple
+from typing import Deque, Tuple
 
 
 class RollingStats:

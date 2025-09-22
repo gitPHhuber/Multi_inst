@@ -25,6 +25,8 @@ dev = [
     "pytest",
     "requests",
     "httpx",
+    "ruff",
+    "black",
 ]
 
 [project.scripts]

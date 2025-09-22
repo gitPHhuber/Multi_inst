@@ -6,7 +6,7 @@ import math
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Deque, Dict, List
+from typing import Deque, List
 
 from .utils import RollingStats
 

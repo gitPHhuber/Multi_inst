@@ -4,14 +4,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import json
-import os
-import sys
 import time
-from pathlib import Path
 from typing import List
 
-from ..api.app import SessionManager, manager
+from ..api.app import manager
 from ..io.json_writer import ReportWriter
 from ..io.ports import list_port_strings
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from .meters import parse_meter_payload
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import binascii
 import logging
 import time
 from dataclasses import dataclass
