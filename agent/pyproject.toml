@@ -33,5 +33,5 @@ dev = [
 multi-inst = "multi_inst_agent.cli.main:main"
 
 [tool.setuptools.packages.find]
-where = ["agent"]
+where = ["."]
 include = ["multi_inst_agent*"]

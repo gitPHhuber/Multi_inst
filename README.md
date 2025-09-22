@@ -1,61 +1,36 @@
-# Multi Inst Diagnostics
+# Multi Inst Diagnostic Suite
 
-Multi Inst is a cross-platform toolkit for batch diagnostics of flight controllers using the
-MultiWii Serial Protocol (MSP). The project targets manufacturing scenarios where multiple USB
-connected devices must be probed in parallel, exposing both human readable metrics and raw MSP
-payloads for post-processing.
+Монорепозиторий производственного инструмента диагностики полётных контроллеров Betaflight.
 
-## Features
+## Структура
 
-- MSP v1 framing with checksum validation and automatic wake-up of USB VCP ports.
-- Parallel polling of multiple `/dev/ttyACM*` / `/dev/ttyUSB*` devices with per-port JSON reports.
-- Decoding of core telemetry (status, attitude, altitude, analog sensors, RC/motors and Betaflight
-  meter extensions).
-- Threshold evaluation with configurable tolerances for tilt, gyro noise, I²C errors and loop
-  jitter.
-- Safe file permission handling when executed under `sudo`.
+- `agent/` — локальный агент (FastAPI, CLI).
+- `webui/` — веб-интерфейс (React + Vite + Tailwind + ECharts).
 
-The repository is structured with dedicated packages for transport (`multi_inst/core`), IO
-coordination (`multi_inst/io`), command line tooling (`multi_inst/cli`), GUI placeholders
-(`multi_inst/gui`), simulation utilities (`multi_inst/sim`) and test suites (`tests/`).
+## Быстрый старт
 
-## Getting started
+### Agent
 
 ```bash
+cd agent
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
+uvicorn multi_inst_agent.api.app:app --host 127.0.0.1 --port 8765
 ```
 
-Run diagnostics against automatically discovered ports:
+CLI режим:
 
 ```bash
-multi-inst --out ./out --workers 4
+multi-inst --out ./out --workers 6 --simulate
 ```
 
-Use JSON lines output and explicit port list:
+### Web UI
 
 ```bash
-multi-inst --jsonl /dev/ttyACM0 /dev/ttyACM1
+cd webui
+npm install
+npm run dev
 ```
 
-Reports are stored as `<UID>.json` (when available) or `DEFECT-xxxxx.json` alongside a `_summary.json`
-file.
-
-## Development
-
-- Format the code base with `black` and keep linting clean with `ruff`.
-- Run the automated test suite before submitting patches:
-
-```bash
-pytest
-```
-
-Continuous integration is configured via GitHub Actions to run formatting, linting and tests on
-pushes and pull requests.
-
-## Roadmap
-
-The current milestone focuses on MSP transport, multi-port orchestration and reliable JSON
-reporting. Upcoming work includes GUI visualisation, simulation tools, advanced analytics and
-detailed documentation for production deployment.
+Откройте http://localhost:5173 для отображения дашборда.
