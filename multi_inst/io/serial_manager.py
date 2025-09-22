@@ -6,7 +6,10 @@ import glob
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Iterable, List, Optional, Sequence, Tuple
 
-import serial
+try:  # pragma: no cover - optional dependency guard for unit tests
+    import serial  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - serial is required in production
+    serial = None  # type: ignore[assignment]
 
 from multi_inst.core.diagnostics import (
     DiagConfig,
@@ -58,6 +61,8 @@ class SerialManager:
         return results, summaries
 
     def _process_port(self, port: str, config: DiagConfig) -> Tuple[dict, dict]:
+        if serial is None:
+            raise RuntimeError("pyserial is not installed")
         try:
             serial_port = serial.Serial(port, baudrate=config.baud, timeout=0.3)
         except serial.SerialException as exc:
