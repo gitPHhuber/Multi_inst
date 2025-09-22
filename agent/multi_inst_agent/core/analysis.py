@@ -43,19 +43,25 @@ class DeviceAnalytics:
 PROFILE_DEFAULTS = {
     "usb_stand": {
         "ignore_tilt": True,
+        "max_tilt": 25.0,
         "max_gyro_std": 6.0,
         "max_gyro_bias": 12.0,
         "max_accnorm_std": 6.0,
         "max_cyc_jitter": 20.0,
         "max_i2c_errors": 0.0,
+        "min_vbat": 0.0,
+        "max_amps": 0.50,
     },
     "field_strict": {
         "ignore_tilt": False,
+        "max_tilt": 12.0,
         "max_gyro_std": 4.0,
         "max_gyro_bias": 8.0,
         "max_accnorm_std": 4.0,
         "max_cyc_jitter": 10.0,
         "max_i2c_errors": 0.0,
+        "min_vbat": 4.0,
+        "max_amps": 0.35,
     },
 }
 
@@ -142,6 +148,8 @@ def evaluate(
     loop_stats: LoopStatistics | None,
     imu_stats: ImuStatistics | None,
     i2c_error_rate: float,
+    analog: dict | None = None,
+    attitude: dict | None = None,
 ) -> DeviceAnalytics:
     profile_cfg = PROFILE_DEFAULTS.get(profile, PROFILE_DEFAULTS["usb_stand"])
     analytics = DeviceAnalytics(
@@ -151,34 +159,48 @@ def evaluate(
     ok = True
     if loop_stats:
         jitter = loop_stats.std_us
-        if jitter > profile_cfg["max_cyc_jitter"]:
+        limit = profile_cfg["max_cyc_jitter"]
+        if jitter > limit:
             ok = False
-            reasons.append(
-                f"loop jitter {jitter:.2f} > {profile_cfg['max_cyc_jitter']}"
-            )
+            reasons.append(f"loop_jitter {jitter:.2f}>{limit:.2f}")
     if imu_stats:
         for axis, std_val in zip("xyz", imu_stats.gyro_std):
-            if std_val > profile_cfg["max_gyro_std"]:
+            limit = profile_cfg["max_gyro_std"]
+            if std_val > limit:
                 ok = False
-                reasons.append(
-                    f"gyro_std_{axis} {std_val:.2f} > {profile_cfg['max_gyro_std']}"
-                )
+                reasons.append(f"gyro_std_{axis} {std_val:.2f}>{limit:.2f}")
         for axis, bias_val in zip("xyz", imu_stats.gyro_bias):
-            if abs(bias_val) > profile_cfg["max_gyro_bias"]:
+            limit = profile_cfg["max_gyro_bias"]
+            if abs(bias_val) > limit:
                 ok = False
-                reasons.append(
-                    f"gyro_bias_{axis} {bias_val:.2f} > {profile_cfg['max_gyro_bias']}"
-                )
-        if imu_stats.acc_norm_std > profile_cfg["max_accnorm_std"]:
+                reasons.append(f"gyro_bias_{axis} {bias_val:.2f}>{limit:.2f}")
+        limit_acc = profile_cfg["max_accnorm_std"]
+        if imu_stats.acc_norm_std > limit_acc:
             ok = False
-            reasons.append(
-                f"acc_norm_std {imu_stats.acc_norm_std:.2f} > {profile_cfg['max_accnorm_std']}"
-            )
-    if i2c_error_rate > profile_cfg["max_i2c_errors"]:
+            reasons.append(f"acc_norm_std {imu_stats.acc_norm_std:.2f}>{limit_acc:.2f}")
+    limit_i2c = profile_cfg["max_i2c_errors"]
+    if i2c_error_rate > limit_i2c:
         ok = False
-        reasons.append(
-            f"i2c_error_rate {i2c_error_rate:.2f} > {profile_cfg['max_i2c_errors']}"
-        )
+        reasons.append(f"i2c_err {i2c_error_rate:.2f}>{limit_i2c:.2f}")
+    if analog:
+        if "vbat_V" in analog:
+            limit_vbat = profile_cfg["min_vbat"]
+            if analog["vbat_V"] < limit_vbat:
+                ok = False
+                reasons.append(f"vbat_low {analog['vbat_V']:.2f}<{limit_vbat:.2f}")
+        if "amps_A" in analog:
+            limit_amps = profile_cfg["max_amps"]
+            if analog["amps_A"] > limit_amps:
+                ok = False
+                reasons.append(f"amps_high {analog['amps_A']:.2f}>{limit_amps:.2f}")
+    if not profile_cfg.get("ignore_tilt", False) and attitude:
+        roll = abs(attitude.get("roll_deg", 0.0))
+        pitch = abs(attitude.get("pitch_deg", 0.0))
+        tilt = max(roll, pitch)
+        limit_tilt = profile_cfg["max_tilt"]
+        if tilt > limit_tilt:
+            ok = False
+            reasons.append(f"tilt {tilt:.1f}>{limit_tilt:.1f}")
     analytics.ok = ok
     analytics.reasons = reasons
     return analytics

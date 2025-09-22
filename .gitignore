@@ -6,6 +6,11 @@ __pycache__/
 .venv/
 node_modules/
 dist/
+*.egg-info/
+out/
+agent/out/
+webui/src/**/*.js
+webui/src/**/*.js.map
 .idea/
 .DS_Store
 *.log

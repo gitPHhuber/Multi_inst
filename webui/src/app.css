@@ -2,10 +2,179 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg: #0f172a;
+  --surface: rgba(15, 23, 42, 0.85);
+  --surface-muted: rgba(30, 41, 59, 0.65);
+  --border: rgba(148, 163, 184, 0.2);
+  --fg: #f8fafc;
+  --muted: rgba(148, 163, 184, 0.8);
+  --accent: #38bdf8;
+  --accent-soft: rgba(56, 189, 248, 0.2);
+  --danger: #fb7185;
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --surface: rgba(255, 255, 255, 0.95);
+  --surface-muted: rgba(226, 232, 240, 0.7);
+  --border: rgba(148, 163, 184, 0.35);
+  --fg: #0f172a;
+  --muted: rgba(71, 85, 105, 0.75);
+  --accent: #0284c7;
+  --accent-soft: rgba(2, 132, 199, 0.18);
+  --danger: #b91c1c;
+}
+
 body {
-  @apply bg-slate-900 text-slate-100;
+  font-family: "Inter", ui-sans-serif, system-ui;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.bg-background {
+  background: var(--bg);
+}
+
+.text-foreground {
+  color: var(--fg);
+}
+
+.bg-surface {
+  background: var(--surface);
+}
+
+.border-border {
+  border-color: var(--border);
+}
+
+.text-muted {
+  color: var(--muted);
 }
 
 .card {
-  @apply bg-slate-800 rounded-lg p-4 shadow-lg border border-slate-700;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.35);
+}
+
+.card-muted {
+  background: var(--surface-muted);
+  border-radius: 16px;
+  border: 1px dashed var(--border);
+}
+
+.chip {
+  border-radius: 9999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+  background: var(--surface-muted);
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+.chip-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip-muted {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: var(--muted);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-ghost {
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0f172a;
+  box-shadow: 0 10px 30px var(--accent-soft);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--fg);
+  border: 1px solid var(--border);
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  color: var(--fg);
+  background: transparent;
+}
+
+.btn-ghost {
+  color: var(--muted);
+  padding: 0.4rem 0.7rem;
+}
+
+.btn-ghost:hover {
+  color: var(--accent);
+}
+
+.input {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  padding: 0.5rem 0.75rem;
+  color: var(--fg);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  margin: 0 0.75rem;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.control select,
+.control input[type="checkbox"] {
+  accent-color: var(--accent);
+  border-radius: 8px;
+  padding: 0.25rem 0.4rem;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
 }
