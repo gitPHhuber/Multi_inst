@@ -33,9 +33,10 @@ def handshake(client: MSPClient) -> Dict[str, object]:
     info: Dict[str, object] = {}
     try:
         payload = client.request(MSPCommand.MSP_API_VERSION)
+        if payload:
+            info["api_raw"] = hexlify(payload)
         if len(payload) >= 3:
             info["api_version"] = f"{payload[1]}.{payload[2]}.{payload[0]}"
-            info["api_raw"] = hexlify(payload)
     except MSPTimeoutError:
         info.setdefault("reasons", []).append("no api version response")
     except MSPChecksumError:
@@ -43,6 +44,8 @@ def handshake(client: MSPClient) -> Dict[str, object]:
 
     try:
         payload = client.request(MSPCommand.MSP_FC_VARIANT)
+        if payload:
+            info["fc_variant_raw"] = hexlify(payload)
         if len(payload) >= 4:
             info["fc_variant"] = payload[:4].decode(errors="ignore")
     except (MSPTimeoutError, MSPChecksumError):
@@ -50,6 +53,8 @@ def handshake(client: MSPClient) -> Dict[str, object]:
 
     try:
         payload = client.request(MSPCommand.MSP_FC_VERSION)
+        if payload:
+            info["fc_version_raw"] = hexlify(payload)
         if len(payload) >= 3:
             info["fc_version"] = f"{payload[0]}.{payload[1]}.{payload[2]}"
     except (MSPTimeoutError, MSPChecksumError):
@@ -57,6 +62,8 @@ def handshake(client: MSPClient) -> Dict[str, object]:
 
     try:
         payload = client.request(MSPCommand.MSP_BOARD_INFO)
+        if payload:
+            info["board_info_raw"] = hexlify(payload)
         if len(payload) >= 4:
             info["board_id"] = payload[:4].decode(errors="ignore")
         if len(payload) >= 12:
@@ -66,6 +73,8 @@ def handshake(client: MSPClient) -> Dict[str, object]:
 
     try:
         payload = client.request(MSPCommand.MSP_BUILD_INFO)
+        if payload:
+            info["build_info_raw"] = hexlify(payload)
         if len(payload) >= 26:
             build_date = payload[0:11].decode(errors="ignore")
             build_time = payload[11:19].decode(errors="ignore")
@@ -77,7 +86,8 @@ def handshake(client: MSPClient) -> Dict[str, object]:
     try:
         payload = client.request(MSPCommand.MSP_UID)
         if payload:
-            info["uid"] = hexlify(payload)
+            info["uid_raw"] = hexlify(payload)
+            info["uid"] = info["uid_raw"]
     except MSPTimeoutError:
         # UID is optional; ignore timeouts silently to avoid flagging older firmware
         pass
