@@ -1,9 +1,18 @@
+
 from __future__ import annotations
 
-"""PySide6 powered real-time dashboard for the Multi Inst toolkit."""
 
 import argparse
 import sys
+
+
+
+from __future__ import annotations
+
+import argparse
+import sys
+
+
 from typing import Iterable, List
 
 from PySide6 import QtWidgets
@@ -23,6 +32,7 @@ except ModuleNotFoundError:  # pragma: no cover
     serial = None  # type: ignore[assignment]
 
 
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Multi Inst GUI")
     parser.add_argument(
@@ -30,6 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Run the GUI in simulator mode (no hardware required).",
     )
+
     parser.add_argument(
         "--ports",
         nargs="*",
