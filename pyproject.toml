@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi-inst"
+version = "0.1.0"
+description = "Multi flight-controller diagnostics toolkit"
+readme = "README.md"
+authors = [{ name = "Multi Inst Team" }]
+requires-python = ">=3.10"
+dependencies = [
+    "pyserial>=3.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=24.3.0",
+    "ruff>=0.4.0",
+    "pytest>=7.4.0",
+]
+
+[project.scripts]
+multi-inst = "cli.diag:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["multi_inst", "multi_inst.*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+minversion = "7.0"
+testpaths = ["tests"]
