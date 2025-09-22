@@ -11,7 +11,9 @@ from starlette.websockets import WebSocketState
 
 from .. import __version__
 from ..core.runtime import SessionManager
+
 from ..io.ports import PortDescriptor, PortFilterConfig, list_ports
+
 from .models import (
     InfoResponse,
     PortInfo,
@@ -32,6 +34,7 @@ app.add_middleware(
 )
 
 manager = SessionManager()
+
 
 
 def _build_port_filter(req: StartRequest) -> PortFilterConfig:
@@ -63,6 +66,7 @@ def _as_port_info(descriptor: PortDescriptor) -> PortInfo:
         whitelisted=bool(descriptor.whitelisted),
         simulated=bool(descriptor.simulated),
         reason=descriptor.reason,
+
     )
 
 
