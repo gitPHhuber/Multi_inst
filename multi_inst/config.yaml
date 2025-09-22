@@ -1,0 +1,23 @@
+profiles:
+  usb_stand:
+    ignore_tilt: true
+    max_tilt: 25.0
+    max_gyro_std: 6.0
+    max_gyro_bias: 12.0
+    max_accnorm_std: 6.0
+    max_cyc_jitter: 20
+    max_i2c_errors: 0
+    sample_rates:
+      status_hz: 10
+      raw_imu_hz: 50
+  field_strict:
+    ignore_tilt: false
+    max_tilt: 5.0
+    max_gyro_std: 3.0
+    max_gyro_bias: 5.0
+    max_accnorm_std: 2.0
+    max_cyc_jitter: 10
+    max_i2c_errors: 0
+    sample_rates:
+      status_hz: 10
+      raw_imu_hz: 50
