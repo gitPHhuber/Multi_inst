@@ -25,8 +25,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--record", help="Path to MSP record file (.msp.zst)")
     parser.add_argument("--profile", default="usb_stand", help="Analysis profile")
     parser.add_argument("--mode", choices=["normal", "pro"], default="normal")
-    parser.add_argument("--auto", dest="auto", action="store_true", help="Auto test flow")
-    parser.add_argument("--no-auto", dest="auto", action="store_false", help="Disable auto flow")
+    parser.add_argument(
+        "--auto", dest="auto", action="store_true", help="Auto test flow"
+    )
+    parser.add_argument(
+        "--no-auto", dest="auto", action="store_false", help="Disable auto flow"
+    )
     parser.set_defaults(auto=True)
     parser.add_argument(
         "--duration", type=float, default=5.0, help="Duration of polling in seconds"

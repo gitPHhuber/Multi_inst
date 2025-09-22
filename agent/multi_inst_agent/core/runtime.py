@@ -66,7 +66,11 @@ def friendly_serial_error(exc: Exception) -> str:
 def probe_serial_port(port: str, baud: int, timeout: float = 0.3) -> ProbeResult:
     try:
         ser = open_serial_port(port, baudrate=baud, timeout=timeout)
-    except (serial.SerialException, OSError, ValueError) as exc:  # pragma: no cover - depends on OS
+    except (
+        serial.SerialException,
+        OSError,
+        ValueError,
+    ) as exc:  # pragma: no cover - depends on OS
         return ProbeResult(False, None, {}, None, friendly_serial_error(exc))
     try:
         meta: Dict[str, str] = {"port": port}
@@ -75,9 +79,7 @@ def probe_serial_port(port: str, baud: int, timeout: float = 0.3) -> ProbeResult
         for cmd in MSP_META_COMMANDS:
             cmd_resp, payload, err = send_command(ser, cmd, timeout=timeout)
             if err:
-                return ProbeResult(
-                    False, None, meta, api_version, f"MSP {cmd} {err}"
-                )
+                return ProbeResult(False, None, meta, api_version, f"MSP {cmd} {err}")
             result = parse_payload(cmd, payload)
             _attach_meta(meta, cmd, result)
             if cmd == MSP_COMMANDS["MSP_UID"]:
@@ -369,9 +371,7 @@ class Session:
                 attitude=ctx.snapshot["attitude"],
             )
             ctx.snapshot["loop"] = loop_stats.__dict__ if loop_stats else {}
-            ctx.snapshot["imu_stats"] = (
-                imu_stats.__dict__ if imu_stats else {}
-            )
+            ctx.snapshot["imu_stats"] = imu_stats.__dict__ if imu_stats else {}
             ctx.snapshot["ok"] = analytics.ok
             ctx.snapshot["reasons"] = analytics.reasons
             ctx.snapshot["duration_s"] = ts - ctx.start_time
@@ -408,7 +408,11 @@ class Session:
                 ts = time.time()
                 await asyncio.sleep(0.1 if ctx.mode == "pro" else 0.2)
                 for cmd in MSP_POLL_COMMANDS:
-                    cmd_resp, payload, err = await asyncio.get_running_loop().run_in_executor(
+                    (
+                        cmd_resp,
+                        payload,
+                        err,
+                    ) = await asyncio.get_running_loop().run_in_executor(
                         None, send_command, ser, cmd
                     )
                     if err:
@@ -437,9 +441,7 @@ class Session:
                     attitude=ctx.snapshot.get("attitude"),
                 )
                 ctx.snapshot["loop"] = loop_stats.__dict__ if loop_stats else {}
-                ctx.snapshot["imu_stats"] = (
-                    imu_stats.__dict__ if imu_stats else {}
-                )
+                ctx.snapshot["imu_stats"] = imu_stats.__dict__ if imu_stats else {}
                 ctx.snapshot["ok"] = analytics.ok
                 ctx.snapshot["reasons"] = analytics.reasons
                 ctx.snapshot["duration_s"] = ts - ctx.start_time

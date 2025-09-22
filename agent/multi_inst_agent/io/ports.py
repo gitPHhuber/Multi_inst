@@ -53,7 +53,9 @@ def _is_candidate(device: str, prefixes: Sequence[str]) -> bool:
     return any(device.startswith(prefix) for prefix in prefixes)
 
 
-def _iter_ports(include_simulated: bool) -> Iterable[serial.tools.list_ports.ListPortInfo]:
+def _iter_ports(
+    include_simulated: bool,
+) -> Iterable[serial.tools.list_ports.ListPortInfo]:
     for port in serial.tools.list_ports.comports():
         if not port.device:
             continue
@@ -76,7 +78,9 @@ def list_ports(config: PortFilterConfig | None = None) -> List[PortInfo]:
             # Skip system serial ports such as /dev/ttyS*
             continue
         allowed = config.allow(entry.vid, entry.pid)
-        if not allowed and not (config.include_simulated and device.startswith("sim://")):
+        if not allowed and not (
+            config.include_simulated and device.startswith("sim://")
+        ):
             reason = "not whitelisted"
         else:
             reason = None
