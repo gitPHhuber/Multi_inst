@@ -1,13 +1,17 @@
 
-"""PySide6 powered real-time dashboard for the Multi Inst toolkit."""
+from __future__ import annotations
 
-"""Minimal GUI entry point placeholder for the Multi Inst toolkit."""
+
+import argparse
+import sys
+
 
 
 from __future__ import annotations
 
 import argparse
 import sys
+
 
 from typing import Iterable, List
 
@@ -107,7 +111,6 @@ def main(argv: List[str] | None = None) -> int:
     window = MainWindow(manager)
     window.show()
     return app.exec()
-
 
 
 if __name__ == "__main__":

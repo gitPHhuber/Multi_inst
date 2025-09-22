@@ -26,11 +26,16 @@ gui = [
 
 [project.scripts]
 
+"multi-inst" = "multi_inst.cli.__main__:main"
+"multi-inst-gui" = "multi_inst.gui.app:main"
+
+
 multi-inst = "multi_inst.cli.__main__:main"
-=======
+
 
 
 multi-inst-gui = "multi_inst.gui.app:main"
+
 
 [tool.setuptools.packages.find]
 where = ["."]

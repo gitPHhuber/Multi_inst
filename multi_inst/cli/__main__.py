@@ -1,4 +1,3 @@
-"""Console script entry point forwarding to :mod:`multi_inst.cli.diag`."""
 
 from __future__ import annotations
 
