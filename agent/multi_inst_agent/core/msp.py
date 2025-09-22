@@ -76,7 +76,9 @@ def _read_exact(ser: SerialLike, size: int, timeout: float) -> bytes:
     return bytes(chunks)
 
 
-def read_response_v1(ser: SerialLike, expect_cmd: Optional[int], timeout: float) -> tuple[Optional[int], bytes, Optional[str]]:
+def read_response_v1(
+    ser: SerialLike, expect_cmd: Optional[int], timeout: float
+) -> tuple[Optional[int], bytes, Optional[str]]:
     deadline = time.time() + timeout
     buffer = bytearray()
     while time.time() < deadline:
@@ -115,7 +117,9 @@ def read_response_v1(ser: SerialLike, expect_cmd: Optional[int], timeout: float)
     return None, b"", "timeout"
 
 
-def open_serial_port(port: str, baudrate: int = 1_000_000, timeout: float = 0.1) -> serial.Serial:
+def open_serial_port(
+    port: str, baudrate: int = 1_000_000, timeout: float = 0.1
+) -> serial.Serial:
     ser = serial.Serial(port=port, baudrate=baudrate, timeout=timeout)
     ser.dtr = False
     ser.rts = False
@@ -125,7 +129,13 @@ def open_serial_port(port: str, baudrate: int = 1_000_000, timeout: float = 0.1)
     return ser
 
 
-def send_command(ser: serial.Serial, cmd: int, payload: bytes = b"", timeout: float = 0.3, retries: int = 3) -> tuple[Optional[int], bytes, Optional[str]]:
+def send_command(
+    ser: serial.Serial,
+    cmd: int,
+    payload: bytes = b"",
+    timeout: float = 0.3,
+    retries: int = 3,
+) -> tuple[Optional[int], bytes, Optional[str]]:
     frame = build_frame_v1(cmd, payload)
     for attempt in range(1, retries + 1):
         ser.write(frame)
@@ -133,6 +143,8 @@ def send_command(ser: serial.Serial, cmd: int, payload: bytes = b"", timeout: fl
         cmd_resp, payload_resp, error = read_response_v1(ser, cmd, timeout)
         if error is None:
             return cmd_resp, payload_resp, None
-        log.debug("MSP command %s failed attempt %s/%s: %s", cmd, attempt, retries, error)
+        log.debug(
+            "MSP command %s failed attempt %s/%s: %s", cmd, attempt, retries, error
+        )
         time.sleep(0.02 * attempt)
     return None, b"", error or "timeout"

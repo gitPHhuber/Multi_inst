@@ -13,7 +13,9 @@ def _split(payload: bytes) -> Tuple[int, bytes]:
     return count, payload[1:]
 
 
-def parse_meter_payload(payload: bytes, meter_type: str) -> Tuple[Dict[str, Any], str, bool]:
+def parse_meter_payload(
+    payload: bytes, meter_type: str
+) -> Tuple[Dict[str, Any], str, bool]:
     raw = payload.hex()
     if not payload:
         return ({"meters": [], "count_declared": 0, "invalid": False}, raw, False)
@@ -26,11 +28,13 @@ def parse_meter_payload(payload: bytes, meter_type: str) -> Tuple[Dict[str, Any]
         if remaining in (2, 4):
             values = struct.unpack_from("<" + {2: "H", 4: "I"}[remaining], rest, cursor)
             invalid = True
-            entries.append({
-                "id": len(entries),
-                "value_raw": values[0],
-                "unit": "auto",
-            })
+            entries.append(
+                {
+                    "id": len(entries),
+                    "value_raw": values[0],
+                    "unit": "auto",
+                }
+            )
             cursor = len(rest)
             break
         if remaining < 3:

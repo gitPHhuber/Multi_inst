@@ -23,7 +23,13 @@ SERIAL_PATTERNS = ("/dev/ttyACM*", "/dev/ttyUSB*")
 def list_ports() -> List[PortInfo]:
     ports = []
     for port in serial.tools.list_ports.comports():
-        ports.append(PortInfo(device=port.device, description=port.description or "", hwid=port.hwid or ""))
+        ports.append(
+            PortInfo(
+                device=port.device,
+                description=port.description or "",
+                hwid=port.hwid or "",
+            )
+        )
     if not ports:
         for pattern in SERIAL_PATTERNS:
             for path in glob.glob(pattern):

@@ -48,7 +48,9 @@ def parse_api_version(payload: bytes) -> MSPParseResult:
     if len(payload) < 3:
         return MSPParseResult({"version": "0.0.0"}, _payload_hex(payload), True)
     major, minor, patch = payload[:3]
-    return MSPParseResult({"version": f"{major}.{minor}.{patch}"}, _payload_hex(payload))
+    return MSPParseResult(
+        {"version": f"{major}.{minor}.{patch}"}, _payload_hex(payload)
+    )
 
 
 def parse_ascii(payload: bytes) -> MSPParseResult:
@@ -132,7 +134,9 @@ def parse_raw_imu(payload: bytes) -> MSPParseResult:
 def parse_analog(payload: bytes) -> MSPParseResult:
     if len(payload) < 7:
         return MSPParseResult({}, _payload_hex(payload), True)
-    vbat, power_meter_sum, rssi, amperage, mAh_drawn = struct.unpack_from("<HBHHH", payload, 0)
+    vbat, power_meter_sum, rssi, amperage, mAh_drawn = struct.unpack_from(
+        "<HBHHH", payload, 0
+    )
     data = {
         "vbat_V": vbat / 10.0,
         "mAh_used": mAh_drawn,
@@ -160,7 +164,9 @@ def parse_rc(payload: bytes) -> MSPParseResult:
 
 def parse_motor(payload: bytes) -> MSPParseResult:
     motor_count = len(payload) // 2
-    motors = list(struct.unpack_from(f"<{motor_count}H", payload, 0)) if motor_count else []
+    motors = (
+        list(struct.unpack_from(f"<{motor_count}H", payload, 0)) if motor_count else []
+    )
     return MSPParseResult({"motors": motors}, _payload_hex(payload), False)
 
 
@@ -195,7 +201,9 @@ def parse_uid(payload: bytes) -> MSPParseResult:
     if len(payload) < 12:
         return MSPParseResult({}, _payload_hex(payload), True)
     uid = struct.unpack_from("<III", payload, 0)
-    return MSPParseResult({"uid": "".join(f"{part:08X}" for part in uid)}, _payload_hex(payload), False)
+    return MSPParseResult(
+        {"uid": "".join(f"{part:08X}" for part in uid)}, _payload_hex(payload), False
+    )
 
 
 PARSERS = {
@@ -217,8 +225,12 @@ PARSERS = {
     MSP_COMMANDS["MSP_VOLTAGE_METERS"]: parse_voltage_meters,
     MSP_COMMANDS["MSP_CURRENT_METERS"]: parse_current_meters,
     MSP_COMMANDS["MSP_BATTERY_STATE"]: parse_battery_state,
-    MSP_COMMANDS["MSP_DATAFLASH_SUMMARY"]: lambda payload: MSPParseResult({"raw": payload.hex()}, payload.hex(), False),
-    MSP_COMMANDS["MSP_ESC_SENSOR_DATA"]: lambda payload: MSPParseResult({"raw": payload.hex()}, payload.hex(), False),
+    MSP_COMMANDS["MSP_DATAFLASH_SUMMARY"]: lambda payload: MSPParseResult(
+        {"raw": payload.hex()}, payload.hex(), False
+    ),
+    MSP_COMMANDS["MSP_ESC_SENSOR_DATA"]: lambda payload: MSPParseResult(
+        {"raw": payload.hex()}, payload.hex(), False
+    ),
 }
 
 

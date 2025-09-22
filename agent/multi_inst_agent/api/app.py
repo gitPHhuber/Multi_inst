@@ -15,7 +15,15 @@ from starlette.websockets import WebSocketState
 
 from .. import __version__
 from ..io.ports import list_ports, list_port_strings
-from .models import InfoResponse, PortsResponse, SnapshotResponse, StartRequest, StartResponse, StopRequest, StopResponse
+from .models import (
+    InfoResponse,
+    PortsResponse,
+    SnapshotResponse,
+    StartRequest,
+    StartResponse,
+    StopRequest,
+    StopResponse,
+)
 
 app = FastAPI(title="Multi Inst Agent", version=__version__)
 app.add_middleware(
@@ -108,7 +116,12 @@ class SimulatedDevice:
                 "invalid": False,
                 "count_declared": 1,
                 "meters": [
-                    {"id": 0, "value_raw": int(analog["vbat_V"] * 10), "voltage_V": analog["vbat_V"], "unit": "V(0.1)"}
+                    {
+                        "id": 0,
+                        "value_raw": int(analog["vbat_V"] * 10),
+                        "voltage_V": analog["vbat_V"],
+                        "unit": "V(0.1)",
+                    }
                 ],
                 "raw": "",
             },
@@ -116,7 +129,12 @@ class SimulatedDevice:
                 "invalid": False,
                 "count_declared": 1,
                 "meters": [
-                    {"id": 0, "value_raw": int(analog["amps_A"] * 100), "amps_A": analog["amps_A"], "unit": "A(0.01)"}
+                    {
+                        "id": 0,
+                        "value_raw": int(analog["amps_A"] * 100),
+                        "amps_A": analog["amps_A"],
+                        "unit": "A(0.01)",
+                    }
                 ],
                 "raw": "",
             },
@@ -135,7 +153,9 @@ class SimulatedDevice:
 
 
 class Session:
-    def __init__(self, session_id: str, ports: List[str], baud: int, profile: str, simulate: bool) -> None:
+    def __init__(
+        self, session_id: str, ports: List[str], baud: int, profile: str, simulate: bool
+    ) -> None:
         self.id = session_id
         self.ports = ports
         self.baud = baud
@@ -190,7 +210,9 @@ class SessionManager:
         self.sessions: Dict[str, Session] = {}
         self.reports: Dict[str, Dict] = {}
 
-    def start_session(self, ports: List[str], baud: int, profile: str, simulate: bool) -> Session:
+    def start_session(
+        self, ports: List[str], baud: int, profile: str, simulate: bool
+    ) -> Session:
         session_id = uuid.uuid4().hex
         if not ports:
             ports = list_port_strings()

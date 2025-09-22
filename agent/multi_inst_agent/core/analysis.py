@@ -101,9 +101,16 @@ class LoopAnalyzer:
 class ImuAnalyzer:
     def __init__(self, window: float = 30.0) -> None:
         self.window = window
-        self.samples: Deque[tuple[float, tuple[int, int, int], tuple[int, int, int]]] = deque()
+        self.samples: Deque[
+            tuple[float, tuple[int, int, int], tuple[int, int, int]]
+        ] = deque()
 
-    def add_sample(self, gyro: tuple[int, int, int], acc: tuple[int, int, int], ts: float | None = None) -> None:
+    def add_sample(
+        self,
+        gyro: tuple[int, int, int],
+        acc: tuple[int, int, int],
+        ts: float | None = None,
+    ) -> None:
         if ts is None:
             ts = time.time()
         self.samples.append((ts, gyro, acc))
@@ -130,25 +137,38 @@ class ImuAnalyzer:
         )
 
 
-def evaluate(profile: str, loop_stats: LoopStatistics | None, imu_stats: ImuStatistics | None, i2c_error_rate: float) -> DeviceAnalytics:
+def evaluate(
+    profile: str,
+    loop_stats: LoopStatistics | None,
+    imu_stats: ImuStatistics | None,
+    i2c_error_rate: float,
+) -> DeviceAnalytics:
     profile_cfg = PROFILE_DEFAULTS.get(profile, PROFILE_DEFAULTS["usb_stand"])
-    analytics = DeviceAnalytics(loop_stats=loop_stats, imu_stats=imu_stats, i2c_error_rate=i2c_error_rate)
+    analytics = DeviceAnalytics(
+        loop_stats=loop_stats, imu_stats=imu_stats, i2c_error_rate=i2c_error_rate
+    )
     reasons: List[str] = []
     ok = True
     if loop_stats:
         jitter = loop_stats.std_us
         if jitter > profile_cfg["max_cyc_jitter"]:
             ok = False
-            reasons.append(f"loop jitter {jitter:.2f} > {profile_cfg['max_cyc_jitter']}")
+            reasons.append(
+                f"loop jitter {jitter:.2f} > {profile_cfg['max_cyc_jitter']}"
+            )
     if imu_stats:
         for axis, std_val in zip("xyz", imu_stats.gyro_std):
             if std_val > profile_cfg["max_gyro_std"]:
                 ok = False
-                reasons.append(f"gyro_std_{axis} {std_val:.2f} > {profile_cfg['max_gyro_std']}")
+                reasons.append(
+                    f"gyro_std_{axis} {std_val:.2f} > {profile_cfg['max_gyro_std']}"
+                )
         for axis, bias_val in zip("xyz", imu_stats.gyro_bias):
             if abs(bias_val) > profile_cfg["max_gyro_bias"]:
                 ok = False
-                reasons.append(f"gyro_bias_{axis} {bias_val:.2f} > {profile_cfg['max_gyro_bias']}")
+                reasons.append(
+                    f"gyro_bias_{axis} {bias_val:.2f} > {profile_cfg['max_gyro_bias']}"
+                )
         if imu_stats.acc_norm_std > profile_cfg["max_accnorm_std"]:
             ok = False
             reasons.append(
@@ -156,7 +176,9 @@ def evaluate(profile: str, loop_stats: LoopStatistics | None, imu_stats: ImuStat
             )
     if i2c_error_rate > profile_cfg["max_i2c_errors"]:
         ok = False
-        reasons.append(f"i2c_error_rate {i2c_error_rate:.2f} > {profile_cfg['max_i2c_errors']}")
+        reasons.append(
+            f"i2c_error_rate {i2c_error_rate:.2f} > {profile_cfg['max_i2c_errors']}"
+        )
     analytics.ok = ok
     analytics.reasons = reasons
     return analytics
